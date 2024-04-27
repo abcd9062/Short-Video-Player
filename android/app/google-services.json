@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "80891904258",
+    "project_id": "short-video-player-7ec8f",
+    "storage_bucket": "short-video-player-7ec8f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80891904258:android:20af8ee7cc40abaf69421b",
+        "android_client_info": {
+          "package_name": "com.heysitam.video_streaming_demo.short_video_streaming_demo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgbxLGgHcN61T0j1ZWH4Q9CmNUi6Dl-yg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
