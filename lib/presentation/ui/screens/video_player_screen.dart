@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:short_video_streaming_demo/data/models/video.dart';
 import 'package:video_player/video_player.dart';
 
-void main() => runApp(const VideoApp());
-
 /// Stateful widget to fetch and then display video content.
-class VideoApp extends StatefulWidget {
-  const VideoApp({super.key});
-
+class VideoPlayerScreen extends StatefulWidget {
+  Video videoData;
+  VideoPlayerScreen({super.key, required this.videoData});
   @override
-  _VideoAppState createState() => _VideoAppState();
+  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
 }
 
-class _VideoAppState extends State<VideoApp> {
+class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _controller;
-  final url = "https://firebasestorage.googleapis.com/v0/b/short-video-player-7ec8f.appspot.com/o/raghunandan.mp4?alt=media&token=34ec12f1-9c8c-4ced-a664-dbec2715746b";
-  final songImageUrl = "https://firebasestorage.googleapis.com/v0/b/short-video-player-7ec8f.appspot.com/o/Images%2Fraghunandan_image.jpeg?alt=media&token=008cb851-e3a8-4f07-bf64-ac68bf15b9aa";
+  //final url = "https://firebasestorage.googleapis.com/v0/b/short-video-player-7ec8f.appspot.com/o/videos%2Fraghunandan.mp4?alt=media&token=cdd20ed4-9d54-4885-bdb2-d5e21f08f002";
+ // final songImageUrl = "https://firebasestorage.googleapis.com/v0/b/short-video-player-7ec8f.appspot.com/o/Images%2Fraghunandan_image.jpeg?alt=media&token=008cb851-e3a8-4f07-bf64-ac68bf15b9aa";
   bool _shouldRenderUi = false;
   @override
   void initState() {
     super.initState();
     _controller = VideoPlayerController.networkUrl(
-        Uri.parse(url),
+        Uri.parse(widget.videoData.videoUrl),
     )
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized,
@@ -57,10 +56,10 @@ class _VideoAppState extends State<VideoApp> {
                             children: [
                               Row(
                                 children: [
-                                  CircularIcon(iconLetter: "A"),
+                                  CircularIcon(iconLetter: widget.videoData.logoLetter),
                                   const SizedBox(width: 8,),
-                                  const Text("@abcd1234",
-                                    style: TextStyle(
+                                  Text(widget.videoData.userId,
+                                    style: const TextStyle(
                                         color: Colors.white70,
                                         fontSize: 16
                                     ),),
@@ -77,17 +76,17 @@ class _VideoAppState extends State<VideoApp> {
                                 ],
                               ),
                               const SizedBox(height: 12,),
-                              const Text("Raghunandana Song Lyrics || Hanuman movie song 🚩 || Hanuman Status 🚩🙏 #shorts #hanuman #viralshorts",
-                                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),)
+                              Text(widget.videoData.videoTitle,
+                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),)
                             ],
                           ),
                         ),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            SideActionButton(icon: Icons.thumb_up_rounded, text: "295K"),
+                            SideActionButton(icon: Icons.thumb_up_rounded, text: widget.videoData.likeNum),
                             SideActionButton(icon: Icons.thumb_down_rounded, text: "Dislike"),
-                            SideActionButton(icon: Icons.message, text: "1,650"),
+                            SideActionButton(icon: Icons.message, text: widget.videoData.commentNum),
                             SideActionButton(icon: Icons.share, text: "Share"),
                           ],
                         )
@@ -96,18 +95,18 @@ class _VideoAppState extends State<VideoApp> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Icon(Icons.library_music_rounded, color: Colors.white70,),
+                          const Icon(Icons.library_music_rounded, color: Colors.white70,),
                           Expanded(
                             child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8),
-                                child: Text("Raghunandana (From \"HanuMan\")", style: TextStyle(color: Colors.white70, fontSize: 16),)),
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(widget.videoData.songName, style: const TextStyle(color: Colors.white70, fontSize: 16),)),
                           ),
                           SizedBox(
                               height: 60,
                               width: 60,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
-                                  child: Image.network(songImageUrl)))
+                                  child: Image.network(widget.videoData.songPosterUrl)))
                         ],
                       )
                     ],

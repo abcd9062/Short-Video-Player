@@ -39,6 +39,7 @@ dependencies:
   video_player: ^2.4.10
   firebase_core: ^2.24.2
   marquee: ^2.2.3
+  equatable: ^2.0.5
 
 dev_dependencies:
   flutter_test:
