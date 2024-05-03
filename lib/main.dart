@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:short_video_streaming_demo/presentation/ui/screens/home_screen.dart';
 import 'package:short_video_streaming_demo/presentation/ui/screens/video_player_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:short_video_streaming_demo/presentation/viewmodels/video_player_viewmodel.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -9,7 +11,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+      create: (context) => VideoPlayerViewModel(),
+      child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:short_video_streaming_demo/data/models/video.dart';
+import 'package:short_video_streaming_demo/presentation/viewmodels/video_player_viewmodel.dart';
 import 'package:video_player/video_player.dart';
 
 /// Stateful widget to fetch and then display video content.
@@ -12,12 +14,11 @@ class VideoPlayerScreen extends StatefulWidget {
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _controller;
-  //final url = "https://firebasestorage.googleapis.com/v0/b/short-video-player-7ec8f.appspot.com/o/videos%2Fraghunandan.mp4?alt=media&token=cdd20ed4-9d54-4885-bdb2-d5e21f08f002";
- // final songImageUrl = "https://firebasestorage.googleapis.com/v0/b/short-video-player-7ec8f.appspot.com/o/Images%2Fraghunandan_image.jpeg?alt=media&token=008cb851-e3a8-4f07-bf64-ac68bf15b9aa";
   bool _shouldRenderUi = false;
   @override
   void initState() {
     super.initState();
+    Provider.of<VideoPlayerViewModel>(context, listen: false).setIsTapOnPauseAndNotify(false);
     _controller = VideoPlayerController.networkUrl(
         Uri.parse(widget.videoData.videoUrl),
     )
@@ -25,6 +26,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
         // Ensure the first frame is shown after the video is initialized,
         // even before the play button has been pressed.
         _shouldRenderUi = true;
+        _controller.setLooping(true);
         _controller.play();
         _controller.setVolume(1.0);
         setState(() {});
@@ -43,74 +45,109 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                 VideoPlayer(_controller)
                     : Container(),
                 if(_shouldRenderUi) Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  child: InkWell(
+                    onTap: (){
+                      if(_controller.value.isPlaying) {
+                        Provider.of<VideoPlayerViewModel>(context, listen: false).setIsTapOnPauseAndNotify(true);
+                        _controller.pause();
+                      } else {
+                        Provider.of<VideoPlayerViewModel>(context, listen: false).setIsTapOnPauseAndNotify(false);
+                        _controller.play();
+                      }
+                    },
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Expanded(
-                          child: Column(
+                        Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Row(
+                                  children: [
+                                    CircularIcon(iconLetter: widget.videoData.logoLetter),
+                                    const SizedBox(width: 8,),
+                                    Text(widget.videoData.userId,
+                                      style: const TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 16
+                                      ),),
+                                    const SizedBox(width: 8,),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(16)),
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                                        child: Text("Subscribe", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(height: 12,),
+                                Text(widget.videoData.videoTitle,
+                                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),)
+                              ],
+                            ),
+                          ),
+                          Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Row(
-                                children: [
-                                  CircularIcon(iconLetter: widget.videoData.logoLetter),
-                                  const SizedBox(width: 8,),
-                                  Text(widget.videoData.userId,
-                                    style: const TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 16
-                                    ),),
-                                  const SizedBox(width: 8,),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius: BorderRadius.circular(16)),
-                                    child: const Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                                      child: Text("Subscribe", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 12,),
-                              Text(widget.videoData.videoTitle,
-                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w500),)
+                              SideActionButton(icon: Icons.thumb_up_rounded, text: widget.videoData.likeNum),
+                              SideActionButton(icon: Icons.thumb_down_rounded, text: "Dislike"),
+                              SideActionButton(icon: Icons.message, text: widget.videoData.commentNum),
+                              SideActionButton(icon: Icons.share, text: "Share"),
                             ],
-                          ),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          )
+                        ],
+                      ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            SideActionButton(icon: Icons.thumb_up_rounded, text: widget.videoData.likeNum),
-                            SideActionButton(icon: Icons.thumb_down_rounded, text: "Dislike"),
-                            SideActionButton(icon: Icons.message, text: widget.videoData.commentNum),
-                            SideActionButton(icon: Icons.share, text: "Share"),
+                            const Icon(Icons.library_music_rounded, color: Colors.white70,),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                  child: Text(widget.videoData.songName, style: const TextStyle(color: Colors.white70, fontSize: 16),)),
+                            ),
+                            SizedBox(
+                                height: 60,
+                                width: 60,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                    child: Image.network(widget.videoData.songPosterUrl)))
                           ],
                         )
                       ],
                     ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const Icon(Icons.library_music_rounded, color: Colors.white70,),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
-                                child: Text(widget.videoData.songName, style: const TextStyle(color: Colors.white70, fontSize: 16),)),
-                          ),
-                          SizedBox(
-                              height: 60,
-                              width: 60,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                  child: Image.network(widget.videoData.songPosterUrl)))
-                        ],
-                      )
-                    ],
                   ),
+                ),
+                Consumer<VideoPlayerViewModel>(
+                  builder: (context, vm, child) {
+                    return Visibility(
+                      visible: vm.isTapOnPause,
+                      child: Center(
+                        child: InkWell(
+                          onTap: () {
+                            Provider.of<VideoPlayerViewModel>(context, listen: false).setIsTapOnPauseAndNotify(false);
+                            _controller.play();
+                          },
+                          child: Container(
+                            width: 100.0,
+                            height: 100.0,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black26,
+                            ),
+                            child: const Icon(Icons.play_arrow_rounded, size: 50, color: Colors.white,),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 if(!_shouldRenderUi) const Center(
                   child: CircularProgressIndicator(),
